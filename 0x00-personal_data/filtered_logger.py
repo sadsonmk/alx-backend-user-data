@@ -14,15 +14,15 @@ PII_FIELDS = ("name", "email", "phone", "ssn", "password")
 def get_db() -> mysql.connector.connection.MySQLConnection:
     """connects to a secure holberton database to read a users table"""
     try:
-        user = os.environ.get("PERSONAL_DATA_DB_USERNAME", "root")
-        password = os.environ.get("PERSONAL_DATA_DB_PASSWORD", "")
-        host = os.environ.get("PERSONAL_DATA_DB_HOST", "localhost")
+        db_user = os.environ.get("PERSONAL_DATA_DB_USERNAME", "root")
+        db_password = os.environ.get("PERSONAL_DATA_DB_PASSWORD", "")
+        db_host = os.environ.get("PERSONAL_DATA_DB_HOST", "localhost")
         my_db = os.environ.get("PERSONAL_DATA_DB_NAME")
 
         conn = mysql.connector.connect(
-                user=user,
-                password=password,
-                host=host,
+                user=db_user,
+                password=db_password,
+                host=db_host,
                 database=my_db
                 )
         return conn
@@ -77,16 +77,21 @@ def main():
         and retrieve all rows in the users table and display
         each row under a filtered format
     """
-    database = get_db()
-    cursor = database.cursor()
+    conn = get_db()
+    if not conn:
+        return
+
+    cursor = conn.cursor()
     cursor.execute("SELECT COUNT(*) FROM users;")
-    for r in cursor:
-        msg = f"name={r[0]}; email={r[1]}; phone={r[2]}; ssn={r[3]}; " +\
-                f"password={r[4]}; ip={r[5]}; last_login={r[6]}; " +\
-                f"user_agent{r[7]};"
-        print(msg)
+    hdrs = [v[0] for v in cursor.description]
+    logger = get_logger()
+    for row in cursor:
+        value = ''
+        for r, c in zip(row, hdrs):
+            value += f"{c}={(r)}; "
+        logger.info(value)
     cursor.close()
-    database.close()
+    conn.close()
 
 
 if __name__ == '__main__':
