@@ -13,18 +13,21 @@ PII_FIELDS = ("name", "email", "phone", "ssn", "password")
 
 def get_db() -> mysql.connector.connection.MySQLConnection:
     """connects to a secure holberton database to read a users table"""
-    user = os.environ.get("PERSONAL_DATA_DB_USERNAME", "root")
-    password = os.environ.get("PERSONAL_DATA_DB_PASSWORD", "")
-    host = os.environ.get("PERSONAL_DATA_DB_HOST", "localhost")
-    my_db = os.environ.get("PERSONAL_DATA_DB_NAME")
+    try:
+        user = os.environ.get("PERSONAL_DATA_DB_USERNAME", "root")
+        password = os.environ.get("PERSONAL_DATA_DB_PASSWORD", "")
+        host = os.environ.get("PERSONAL_DATA_DB_HOST", "localhost")
+        my_db = os.environ.get("PERSONAL_DATA_DB_NAME")
 
-    myDatabase = mysql.connector.connect(
-            user=user,
-            password=password,
-            host=host,
-            database=my_db
-            )
-    return myDatabase
+        conn = mysql.connector.connect(
+                user=user,
+                password=password,
+                host=host,
+                database=my_db
+                )
+        return conn
+    except mysql.connector.Error as err:
+        return None
 
 
 def get_logger() -> logging.Logger:
@@ -67,3 +70,24 @@ def filter_datum(fields: List[str], redaction: str,
         message = re.sub(rf'{val}=.*?{separator}',
                          f'{val}={redaction}{separator}', message)
     return message
+
+
+def main():
+    """The function will obtain a database connection using get_db
+        and retrieve all rows in the users table and display
+        each row under a filtered format
+    """
+    database = get_db()
+    cursor = database.cursor()
+    cursor.execute("SELECT COUNT(*) FROM users;")
+    for r in cursor:
+        msg = f"name={r[0]}; email={r[1]}; phone={r[2]}; ssn={r[3]}; " +\
+                f"password={r[4]}; ip={r[5]}; last_login={r[6]}; " +\
+                f"user_agent{r[7]};"
+        print(msg)
+    cursor.close()
+    database.close()
+
+
+if __name__ == '__main__':
+    main()
