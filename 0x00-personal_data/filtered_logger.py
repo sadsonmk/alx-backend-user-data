@@ -14,15 +14,15 @@ PII_FIELDS = ("name", "email", "phone", "ssn", "password")
 def get_db() -> mysql.connector.connection.MySQLConnection:
     """connects to a secure holberton database to read a users table"""
     user = os.environ.get("PERSONAL_DATA_DB_USERNAME", "root")
-    host = os.environ.get("PERSONAL_DATA_DB_HOST", "localhost")
     password = os.environ.get("PERSONAL_DATA_DB_PASSWORD", "")
-    database = os.environ.get("PERSONAL_DATA_DB_NAME")
+    host = os.environ.get("PERSONAL_DATA_DB_HOST", "localhost")
+    my_db = os.environ.get("PERSONAL_DATA_DB_NAME")
 
     myDatabase = mysql.connector.connect(
-            host=host,
             user=user,
             password=password,
-            database=database
+            host=host,
+            database=my_db
             )
     return myDatabase
 
