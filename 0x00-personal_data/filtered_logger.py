@@ -7,6 +7,17 @@ import re
 from typing import List
 
 import logging
+PII_FIELDS = ("name", "email", "phone", "ssn", "password")
+
+
+def get_logger() -> logging.Logger:
+    """creates a logger which return a logger object"""
+    my_logger = logging.getLogger("user_data")
+    my_logger.setLevel(logging.INFO)
+    my_logger.propagate = False
+    hdlr = logging.StreamHandler(RedactingFormatter(PII_FIELDS))
+    my_logger.addHandler(hdlr)
+    return my_logger
 
 
 class RedactingFormatter(logging.Formatter):
