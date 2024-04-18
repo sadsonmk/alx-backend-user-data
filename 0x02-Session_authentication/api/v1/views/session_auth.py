@@ -15,21 +15,20 @@ def auth_session_login() -> Tuple[str, int]:
     Return:
       the dictionary representation of the User
     """
-    if request.method == 'POST':
-        email = request.form.get('email')
-        if not email:
-            return json({"error": "email missing"}), 400
-        password = request.form.get('password')
-        if not password:
-            return json({"error": "password missing"}), 400
-        user = User.search({"email": email})
-        if not user:
-            return json({"error": "no user found for this email"}), 404
-        if not user[0].is_valid_password(password):
-            return json({"error": "wrong password"}), 401
+    email = request.form.get('email')
+    if not email:
+        return json({"error": "email missing"}), 400
+    password = request.form.get('password')
+    if not password:
+        return json({"error": "password missing"}), 400
+    user = User.search({"email": email})
+    if not user:
+        return json({"error": "no user found for this email"}), 404
+    if not user[0].is_valid_password(password):
+        return json({"error": "wrong password"}), 401
 
-        from api.v1.app import auth
-        session_id = auth.create_session(getattr(user[0], 'id'))
-        resp = jsonify(user[0].to_json())
-        resp.set_cookie(getenv('SESSION_NAME'), session_id)
-        return resp
+    from api.v1.app import auth
+    session_id = auth.create_session(getattr(user[0], 'id'))
+    resp = jsonify(user[0].to_json())
+    resp.set_cookie(getenv('SESSION_NAME'), session_id)
+    return resp
