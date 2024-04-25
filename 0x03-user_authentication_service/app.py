@@ -1,7 +1,13 @@
 #!/usr/bin/env python3
 """module that creates a basic flask app"""
 from auth import Auth
-from flask import Flask, jsonify, request, make_response
+from flask import (
+        Flask,
+        jsonify,
+        request,
+        make_response,
+        abort
+        )
 
 app = Flask(__name__)
 auth = Auth()
