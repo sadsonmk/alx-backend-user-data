@@ -12,7 +12,7 @@ from flask import (
         )
 
 app = Flask(__name__)
-authy = Auth()
+AUTH = Auth()
 
 
 @app.route('/users', methods=['POST'])
@@ -22,7 +22,7 @@ def users():
     password = request.form.get('password')
 
     try:
-        user = authy.register_user(email, password)
+        user = AUTH.register_user(email, password)
         return jsonify({"email": user.email, "message": "user created"})
     except ValueError:
         return jsonify({"message": "email already registered"}), 400
@@ -35,7 +35,7 @@ def login():
     """
     email = request.form.get('email', '')
     password = request.form.get('password', '')
-    valid_logn = authy.valid_login(email, password)
+    valid_logn = AUTH.valid_login(email, password)
     if valid_logn:
         res = make_response(jsonify({"email": email, "message": "logged in"}))
         res.set_cookie('session_id', valid_logn)
@@ -47,7 +47,7 @@ def login():
 def logout():
     """logouts the user and destroys the session"""
     session_id = request.cookies.get('session_id')
-    user = authy.get_user_from_session_id(session_id)
+    user = AUTH.get_user_from_session_id(session_id)
 
     if user:
         authy.destroy_session(user.id)
