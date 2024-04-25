@@ -48,4 +48,4 @@ class Auth:
 
     def _generate_uuid() -> str:
         """generates a uuid"""
-        return str(uuid4())
+        return str(uuid.uuid4())
