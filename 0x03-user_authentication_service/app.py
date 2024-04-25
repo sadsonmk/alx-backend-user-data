@@ -6,7 +6,9 @@ from flask import (
         jsonify,
         request,
         make_response,
-        abort
+        abort,
+        redirect,
+        url_for
         )
 
 app = Flask(__name__)
@@ -45,6 +47,19 @@ def login():
         res.set_cookie('session_id', valid_logn)
         return res
     abort(401)
+
+
+@app.route('/sessions', methods=['DELETE'])
+def logout():
+    """logouts the user and destroys the session"""
+    session_id = request.cookies.get('session_id')
+    user = authy.get_user_from_session_id(session_id)
+
+    if user:
+        authy.destroy_session(user.id)
+        return redirect(url_for('index'))
+    else:
+        abort(403)
 
 
 if __name__ == "__main__":
