@@ -10,7 +10,7 @@ from flask import (
         )
 
 app = Flask(__name__)
-auth = Auth()
+authy = Auth()
 
 
 @app.route('/', methods=['GET'])
@@ -26,7 +26,7 @@ def users():
     password = request.form.get('password')
 
     try:
-        user = auth.register_user(email, password)
+        user = authy.register_user(email, password)
         return jsonify({"email": user.email, "message": "user created"})
     except ValueError:
         return jsonify({"message": "email already registered"}), 400
@@ -39,13 +39,12 @@ def login():
     """
     email = request.form.get('email', '')
     password = request.form.get('password', '')
-    try:
-        valid_logn = auth.valid_login(email, password)
-    except ValueError:
-        abort(401)
-    res = make_response(jsonify({"email": email, "message": "logged in"}))
-    res.set_cookie('session_id', valid_logn)
-    return res
+    valid_logn = authy.valid_login(email, password)
+    if valid_logn:
+        res = make_response(jsonify({"email": email, "message": "logged in"}))
+        res.set_cookie('session_id', valid_logn)
+        return res
+    abort(401)
 
 
 if __name__ == "__main__":
