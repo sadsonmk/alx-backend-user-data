@@ -15,12 +15,6 @@ app = Flask(__name__)
 authy = Auth()
 
 
-@app.route('/', methods=['GET'])
-def index():
-    """defines the home route"""
-    return jsonify({"message": "Bienvenue"})
-
-
 @app.route('/users', methods=['POST'])
 def users():
     """end-point to register a user"""
@@ -60,6 +54,12 @@ def logout():
         return redirect(url_for('index'))
     else:
         abort(403)
+
+
+@app.route('/', methods=['GET'])
+def index():
+    """defines the home route"""
+    return jsonify({"message": "Bienvenue"})
 
 
 if __name__ == "__main__":
