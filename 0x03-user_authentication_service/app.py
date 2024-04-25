@@ -44,7 +44,7 @@ def login():
     except ValueError:
         abort(401)
     res = make_response(jsonify({"email": email, "message": "logged in"}))
-    res.set_cookie('session_id', auth.create_session(email))
+    res.set_cookie('session_id', valid_logn)
     return res
 
 
